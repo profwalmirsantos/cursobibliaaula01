@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mês da Bíblia: Desvendando a Formação das Escrituras</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Subtle Sage -->
+    <!-- Application Structure Plan: A thematic, interactive journey in five sections. 1) Hero/Introduction to establish importance. 2) Comparative section with charts and tabs to show differences between canons. 3) A visual timeline to illustrate the 'how' and 'when' of canonization. 4) An interactive card gallery for the 'lost' books to make them feel tangible. 5) An accordion for the 'Questions for Today' to encourage reflection. This structure turns a linear text into an exploratory experience, guiding the user from foundational concepts to complex questions in a digestible, engaging way. -->
+    <!-- Visualization & Content Choices: 1. Inform: Large animated numbers for book counts. 2. Compare: An interactive Chart.js bar chart to visualize differences in canon sizes, plus JS-powered tabs to toggle between Tanakh and OT structures. This makes abstract lists and numbers easy to grasp. 3. Change over Time: An HTML/CSS/JS interactive timeline to show the long process of canonization. 4. Organize/Inform: A grid of clickable cards for non-canonical books, creating a sense of discovery. 5. Engage: An accordion for final questions, promoting focused reflection. All choices are designed to make the information interactive and understandable without SVG or Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Merriweather', serif;
+        }
+        .active-tab {
+            border-bottom-color: #6D8B74 !important;
+            color: #3E5144 !important;
+            font-weight: 600;
+        }
+        .timeline-item-content {
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .timeline-item-content.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-container:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .accordion-content {
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .accordion-content.open {
+            max-height: 500px;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header and Introduction -->
+    <header class="bg-stone-100 text-center py-16 px-4">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold text-stone-800">Desvendando a Formação da Bíblia</h1>
+            <p class="mt-4 text-lg md:text-xl text-stone-600 font-serif">Uma jornada interativa pela história, estrutura e questionamentos das Escrituras Sagradas.</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+
+        <!-- Section 1: Why it matters -->
+        <section id="importancia" class="my-12">
+            <h2 class="text-3xl font-bold text-center mb-4 text-stone-700">Por que esta história é importante?</h2>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-lg">A Bíblia é o alicerce da fé para milhões de pessoas. Entender como ela foi formada — quais livros foram escolhidos, quais foram deixados de fora e por quê — não é apenas uma curiosidade acadêmica. É uma forma de aprofundar nossa fé, compreender nossa herança espiritual e dialogar de maneira mais informada e consciente sobre os textos que guiam nossa vida e missão.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                    <h3 class="text-xl font-bold text-[#6D8B74] mb-2 font-serif">Fundamento da Fé</h3>
+                    <p>Conhecer suas origens fortalece a confiança na confiabilidade e inspiração dos textos sagrados.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                    <h3 class="text-xl font-bold text-[#6D8B74] mb-2 font-serif">Identidade e Missão</h3>
+                    <p>A Bíblia nos ajuda a entender quem somos como povo de Deus e qual é o nosso propósito no mundo.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                    <h3 class="text-xl font-bold text-[#6D8B74] mb-2 font-serif">Diálogo e Crescimento</h3>
+                    <p>Permite-nos fazer perguntas legítimas e aprofundar a fé de maneira consciente e madura.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Comparing the Canons -->
+        <section id="canones" class="my-16 bg-stone-50 p-6 md:p-10 rounded-xl border border-stone-200">
+            <h2 class="text-3xl font-bold text-center mb-2 text-stone-700">O Que Está na Bíblia?</h2>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-lg">A composição da Bíblia varia. As tradições judaica, protestante, católica e ortodoxa têm "Antigos Testamentos" com diferentes contagens e ordens de livros, embora o Novo Testamento seja o mesmo para os cristãos. Explore abaixo as semelhanças e diferenças.</p>
+            
+            <div class="chart-container mb-12">
+                <canvas id="canonsChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg p-6 shadow-inner border border-stone-200">
+                <div class="flex border-b border-stone-200 mb-4">
+                    <button class="tab-button active-tab py-2 px-4 border-b-2 border-transparent text-stone-500 hover:text-stone-700" onclick="showTab('tanakh')">Bíblia Judaica (Tanakh)</button>
+                    <button class="tab-button py-2 px-4 border-b-2 border-transparent text-stone-500 hover:text-stone-700" onclick="showTab('antigoTestamento')">Antigo Testamento Cristão</button>
+                </div>
+                <div id="tanakh" class="tab-content">
+                    <h3 class="font-bold text-xl mb-2 font-serif text-stone-800">A Estrutura do Tanakh (24 Livros)</h3>
+                    <p class="mb-4">O acrônimo Tanakh deriva das três grandes seções da Bíblia Hebraica:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div><strong class="text-[#6D8B74]">Torá (Lei):</strong> Gênesis, Êxodo, Levítico, Números, Deuteronômio.</div>
+                        <div><strong class="text-[#6D8B74]">Nevi'im (Profetas):</strong> Josué, Juízes, Samuel, Reis, Isaías, Jeremias, Ezequiel, Os Doze (Profetas Menores).</div>
+                        <div><strong class="text-[#6D8B74]">Ketuvim (Escritos):</strong> Salmos, Provérbios, Jó, Cântico dos Cânticos, Rute, Lamentações, Eclesiastes, Ester, Daniel, Esdras-Neemias, Crônicas.</div>
+                    </div>
+                </div>
+                <div id="antigoTestamento" class="tab-content hidden">
+                    <h3 class="font-bold text-xl mb-2 font-serif text-stone-800">A Estrutura do Antigo Testamento Cristão (39 Livros Protestantes)</h3>
+                    <p class="mb-4">Os cristãos reorganizaram os mesmos livros do Tanakh e os contaram individualmente, resultando em uma ordem e número diferentes:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div><strong class="text-[#6D8B74]">Pentateuco:</strong> Gênesis a Deuteronômio.</div>
+                        <div><strong class="text-[#6D8B74]">Livros Históricos:</strong> Josué a Ester.</div>
+                        <div><strong class="text-[#6D8B74]">Livros de Sabedoria:</strong> Jó a Cântico dos Cânticos.</div>
+                        <div><strong class="text-[#6D8B74]">Profetas:</strong> Isaías a Malaquias.</div>
+                    </div>
+                    <p class="mt-4 text-sm text-stone-600">*Bíblias católicas e ortodoxas incluem livros adicionais nesta seção, conhecidos como Deuterocanônicos ou Apócrifos (ex: Tobias, Judite, Sabedoria, Eclesiástico, I e II Macabeus).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Timeline of Canonization -->
+        <section id="timeline" class="my-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-stone-700">Construindo o Cânon: Uma Linha do Tempo</h2>
+            <p class="text-center max-w-3xl mx-auto mb-10 text-lg">A seleção dos livros sagrados não foi um evento único, mas um processo gradual que durou séculos. Esta linha do tempo destaca momentos cruciais na jornada de judeus e cristãos para definir suas Escrituras.</p>
+            <div class="relative border-l-2 border-[#8A9A5B] ml-6 md:ml-0 md:border-l-0 md:border-t-2 md:w-full md:flex">
+                <div class="timeline-item mb-8 md:mb-0 md:flex-1 relative">
+                    <div class="absolute -left-3 md:left-auto md:-top-3 md:right-1/2 w-6 h-6 bg-white border-2 border-[#6D8B74] rounded-full"></div>
+                    <div class="ml-8 md:ml-0 md:mt-10 md:text-center md:px-2">
+                        <h4 class="font-bold cursor-pointer text-lg text-stone-800" onclick="toggleTimeline(this)">Escritos Fundamentais</h4>
+                        <div class="timeline-item-content text-stone-600">
+                           <p class="mt-2">Os livros que compõem a Torá (Gênesis a Deuteronômio) e os Profetas Anteriores (Josué a Reis) começam a ser amplamente reconhecidos como autoridade dentro da comunidade judaica.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item mb-8 md:mb-0 md:flex-1 relative">
+                    <div class="absolute -left-3 md:left-auto md:-top-3 md:right-1/2 w-6 h-6 bg-white border-2 border-[#6D8B74] rounded-full"></div>
+                    <div class="ml-8 md:ml-0 md:mt-10 md:text-center md:px-2">
+                        <h4 class="font-bold cursor-pointer text-lg text-stone-800" onclick="toggleTimeline(this)">Tradições Orais e Novos Escritos</h4>
+                        <div class="timeline-item-content text-stone-600">
+                            <p class="mt-2">No período do Segundo Templo, tradições orais judaicas (que mais tarde formariam a Mishná) ganham importância. Simultaneamente, os primeiros escritos cristãos (Evangelhos e Cartas) começam a circular, contando a história de Jesus e suas implicações.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="timeline-item mb-8 md:mb-0 md:flex-1 relative">
+                    <div class="absolute -left-3 md:left-auto md:-top-3 md:right-1/2 w-6 h-6 bg-white border-2 border-[#6D8B74] rounded-full"></div>
+                    <div class="ml-8 md:ml-0 md:mt-10 md:text-center md:px-2">
+                        <h4 class="font-bold cursor-pointer text-lg text-stone-800" onclick="toggleTimeline(this)">Separação e Definição</h4>
+                        <div class="timeline-item-content text-stone-600">
+                           <p class="mt-2">Entre 62 e 135 d.C., à medida que cristãos e judeus se separam, a necessidade de definir coleções de escritos sagrados se intensifica. Os cristãos já haviam adotado as Escrituras judaicas como suas e começam a se referir a seus próprios textos como "Escritura".</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item md:flex-1 relative">
+                    <div class="absolute -left-3 md:left-auto md:-top-3 md:right-1/2 w-6 h-6 bg-white border-2 border-[#6D8B74] rounded-full"></div>
+                    <div class="ml-8 md:ml-0 md:mt-10 md:text-center md:px-2">
+                        <h4 class="font-bold cursor-pointer text-lg text-stone-800" onclick="toggleTimeline(this)">Uso dos Termos "Testamento"</h4>
+                        <div class="timeline-item-content text-stone-600">
+                           <p class="mt-2">No final do século II, os termos "Antigo Testamento" e "Novo Testamento" começam a ser usados por cristãos para distinguir entre as Escrituras judaicas herdadas e sua crescente coleção de escritos sobre Jesus e a igreja primitiva.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section 4: The 'Lost' Books -->
+        <section id="perdidos" class="my-16 bg-stone-50 p-6 md:p-10 rounded-xl border border-stone-200">
+            <h2 class="text-3xl font-bold text-center mb-2 text-stone-700">Os Livros "Não Canônicos"</h2>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-lg">Muitos outros escritos religiosos, teologicamente ricos e populares na antiguidade, circularam entre as comunidades judaicas e cristãs. Embora não tenham entrado no cânon final, eles informaram a fé de muitos. Passe o mouse sobre os cartões para saber mais.</p>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <div class="card-container h-40 [perspective:1000px]">
+                    <div class="card-inner relative w-full h-full">
+                        <div class="card-front absolute w-full h-full bg-white rounded-lg shadow-md flex items-center justify-center p-4 text-center font-bold text-stone-700">1 Enoque</div>
+                        <div class="card-back absolute w-full h-full bg-[#6D8B74] text-white rounded-lg shadow-md flex items-center justify-center p-4 text-center">Um texto apocalíptico judaico, influente no pensamento do Novo Testamento, mas excluído pela maioria das tradições.</div>
+                    </div>
+                </div>
+                <div class="card-container h-40 [perspective:1000px]">
+                    <div class="card-inner relative w-full h-full">
+                        <div class="card-front absolute w-full h-full bg-white rounded-lg shadow-md flex items-center justify-center p-4 text-center font-bold text-stone-700">Didaché</div>
+                        <div class="card-back absolute w-full h-full bg-[#6D8B74] text-white rounded-lg shadow-md flex items-center justify-center p-4 text-center">Um manual cristão primitivo sobre ética e práticas da igreja, considerado Escritura por algumas comunidades.</div>
+                    </div>
+                </div>
+                 <div class="card-container h-40 [perspective:1000px]">
+                    <div class="card-inner relative w-full h-full">
+                        <div class="card-front absolute w-full h-full bg-white rounded-lg shadow-md flex items-center justify-center p-4 text-center font-bold text-stone-700">Pastor de Hermas</div>
+                        <div class="card-back absolute w-full h-full bg-[#6D8B74] text-white rounded-lg shadow-md flex items-center justify-center p-4 text-center">Uma obra cristã popular com visões e parábolas sobre arrependimento, lida em muitas igrejas como inspirada.</div>
+                    </div>
+                </div>
+                <div class="card-container h-40 [perspective:1000px]">
+                    <div class="card-inner relative w-full h-full">
+                        <div class="card-front absolute w-full h-full bg-white rounded-lg shadow-md flex items-center justify-center p-4 text-center font-bold text-stone-700">Epístola de Barnabé</div>
+                        <div class="card-back absolute w-full h-full bg-[#6D8B74] text-white rounded-lg shadow-md flex items-center justify-center p-4 text-center">Interpreta o Antigo Testamento de forma alegórica para encontrar Cristo, valorizada nos primeiros séculos.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section 5: Questions for Today -->
+        <section id="questoes" class="my-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-stone-700">Questões para Hoje</h2>
+             <p class="text-center max-w-3xl mx-auto mb-8 text-lg">A história da formação da Bíblia não é apenas sobre o passado; ela levanta questões vitais para a nossa fé hoje. A investigação canônica nos ajuda a entender as escolhas feitas e nos convida a uma reflexão contínua.</p>
+            <div class="space-y-4 max-w-3xl mx-auto">
+                <div class="accordion-item bg-white border border-stone-200 rounded-lg">
+                    <button class="accordion-header w-full text-left p-4 flex justify-between items-center font-bold text-lg text-stone-800" onclick="toggleAccordion(this)">
+                        <span>Quais foram os critérios de seleção?</span>
+                        <span class="transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-stone-600">
+                        <p>O processo de seleção foi complexo e multifacetado, muitas vezes envolvendo a apostolicidade (ligação com um apóstolo), a ortodoxia (conformidade com a fé estabelecida) e o uso generalizado nas igrejas. No entanto, a exclusão de livros teologicamente semelhantes mostra que não havia uma fórmula simples, e o processo foi mais orgânico do que sistemático.</p>
+                    </div>
+                </div>
+                <div class="accordion-item bg-white border border-stone-200 rounded-lg">
+                    <button class="accordion-header w-full text-left p-4 flex justify-between items-center font-bold text-lg text-stone-800" onclick="toggleAccordion(this)">
+                        <span>Devemos reconsiderar o cânon?</span>
+                        <span class="transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-stone-600">
+                        <p>Esta é uma questão de debate teológico. Entender por que certos livros foram excluídos nos dá uma maior apreciação pelo cânon que temos. Embora seja improvável que as principais tradições alterem seus cânones, estudar escritos não canônicos pode enriquecer nossa compreensão do mundo bíblico e da fé cristã primitiva.</p>
+                    </div>
+                </div>
+                 <div class="accordion-item bg-white border border-stone-200 rounded-lg">
+                    <button class="accordion-header w-full text-left p-4 flex justify-between items-center font-bold text-lg text-stone-800" onclick="toggleAccordion(this)">
+                        <span>Como lidar com passagens difíceis?</span>
+                        <span class="transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-stone-600">
+                        <p>Textos como "escravos, obedeçam a seus senhores" (Efésios 6:5) nos desafiam. Estudar o contexto histórico da formação da Bíblia nos ensina que os textos foram escritos em culturas muito diferentes da nossa. Isso nos encoraja a uma leitura mais crítica e contextualizada, buscando o princípio teológico duradouro por trás da linguagem culturalmente específica, em vez de aplicar todas as palavras literalmente.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-white text-center p-8 mt-16">
+        <p class="font-serif">"É apropriado levantar questões que nos permitam examinar nossa fé."</p>
+        <p class="text-sm mt-2 text-stone-400">Um convite à exploração e ao diálogo no Mês da Bíblia.</p>
+    </footer>
+
+    <script>
+        // Tab functionality
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active-tab'));
+            event.currentTarget.classList.add('active-tab');
+        }
+
+        // Timeline functionality
+        function toggleTimeline(headerElement) {
+            const content = headerElement.nextElementSibling;
+            content.classList.toggle('open');
+        }
+
+        // Accordion functionality
+        function toggleAccordion(headerElement) {
+            const content = headerElement.nextElementSibling;
+            const icon = headerElement.querySelector('span:last-child');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Close other accordions
+                document.querySelectorAll('.accordion-content.open').forEach(openContent => {
+                    openContent.classList.remove('open');
+                    openContent.previousElementSibling.querySelector('span:last-child').style.transform = 'rotate(0deg)';
+                });
+                content.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+        
+        // Chart.js implementation
+        const ctx = document.getElementById('canonsChart').getContext('2d');
+        const canonsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Bíblia Judaica (Tanakh)', 'Antigo Testamento (Protestante)', 'Antigo Testamento (Católico)'],
+                datasets: [{
+                    label: 'Número de Livros',
+                    data: [24, 39, 46], // 39 prot + 7 deutero
+                    backgroundColor: [
+                        'rgba(141, 166, 131, 0.7)',
+                        'rgba(109, 139, 116, 0.7)',
+                        'rgba(62, 81, 68, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(141, 166, 131, 1)',
+                        'rgba(109, 139, 116, 1)',
+                        'rgba(62, 81, 68, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Comparação do Número de Livros no "Primeiro Testamento"',
+                        font: {
+                            size: 16,
+                            family: "'Merriweather', serif"
+                        },
+                        color: '#4A4A4A',
+                        padding: {
+                            bottom: 20
+                        }
+                    },
+                     tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + ' livros';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#4A4A4A'
+                        },
+                         grid: {
+                            color: '#EAEAEA'
+                        }
+                    },
+                    x: {
+                         ticks: {
+                            color: '#4A4A4A',
+                             // Wrap long labels
+                            callback: function(value, index, values) {
+                                const label = this.getLabelForValue(value);
+                                if (label.length > 15) {
+                                    return label.split(' ');
+                                }
+                                return label;
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
